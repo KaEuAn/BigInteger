@@ -1,1 +1,1 @@
-# BigInteger - C++ library for working with big numbers by class BigInteger
+# BigInteger - C++ library for work with big numbers by class BigInteger
