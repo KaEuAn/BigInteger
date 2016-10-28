@@ -259,7 +259,7 @@ public:
     }
 
     bool operator > (const BigInteger& a) const {
-        return ! (a < *this);
+        return (a < *this);
     }
 
     bool operator >= (const BigInteger& a) const {
@@ -384,4 +384,5 @@ const BigInteger operator % (const BigInteger& a, const BigInteger& b) {
     BigInteger c = a;
     return c %= b;
 }
+
 
