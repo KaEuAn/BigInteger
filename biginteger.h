@@ -8,11 +8,11 @@ class BigInteger {
     size_t _size;
     mutable bool positive;
 
-    inline bool isZero () const {
+    inline bool isZero() const {
         return (_size == 0) || (_size == 1 && number[0] == 0);
     }
 
-    void makeTransitionThroughDozens () {
+    void makeTransitionThroughDozens() {
         int pre = 0;
         for (unsigned int i = 0; i < _size; ++i) {
             number[i] += pre;
@@ -48,7 +48,7 @@ public:
                     break;
                 number.push_back((short) a[i] - '0');
             }
-            PopZeroes();
+            popZeroes();
         } else {
             _size = 1;
             number.push_back(0);
@@ -73,9 +73,9 @@ public:
                     number[i + j] -= more * base;
                 }
             }
-            PopZeroes();
+            popZeroes();
         }
-        // minus
+            // minus
         else {
             const BigInteger *p2 = &a;
             const BigInteger *p1 = &a;
@@ -94,7 +94,7 @@ public:
             positive = real_sign1;
             a.positive = real_sign2;
             while (_size < a._size)
-                PushOne();
+                pushOne();
             int per = 0;
             for (size_t i = 0; i < p2->_size || per == 1; ++i) {
                 number[i] = (i < p2->_size)? p1->number[i] - (p2->number[i] + per) : p1->number[i] -(per);
@@ -105,7 +105,7 @@ public:
                 }
             }
             positive = p1->positive;
-            PopZeroes();
+            popZeroes();
         };
         return *this;
     }
@@ -115,9 +115,9 @@ public:
             *this = 0;
             return *this;
         }
-        a.ChangeSign();
+        a.changeSign();
         *this += a;
-        a.ChangeSign();
+        a.changeSign();
         return *this;
     }
 
@@ -145,7 +145,7 @@ public:
                 }
             }
         }
-        c.PopZeroes();
+        c.popZeroes();
         *this = c;
         return *this;
     }
@@ -165,16 +165,16 @@ public:
         positive = real_sign1;
         a.positive = real_sign2;
         size_t n = a._size;
-        PushOne();
+        pushOne();
         for (size_t j = _size - n - 1; j < _size - n; --j) {
-            int chast = (base * number[j + n] + number[j + n - 1]) / a.number[n - 1];
-            int r = (base * number[j + n] + number[j + n - 1]) % a.number[n - 1];
-            if ((n - 2 <= n) && (chast == base || chast * a.number[n - 2] > base * r + number[j + n - 2])) {
-                r += a.number[n - 1];
-                --chast;
+            int quotient = (base * number[j + n] + number[j + n - 1]) / a.number[n - 1];
+            int modulo = (base * number[j + n] + number[j + n - 1]) % a.number[n - 1];
+            if ((n - 2 <= n) && (quotient == base || quotient * a.number[n - 2] > base * modulo + number[j + n - 2])) {
+                modulo += a.number[n - 1];
+                --quotient;
             }
             BigInteger q_um = a;
-            q_um *= chast;
+            q_um *= quotient;
             int per = 0;
             for (size_t i = j; i < j + q_um._size; ++i) {
                 //
@@ -186,7 +186,7 @@ public:
                 }
             }
             if (number[j + q_um._size] < 0) {
-                --chast;
+                --quotient;
                 int more = 0;
                 for (size_t i = j; i < q_um._size - 1; ++i) {
                     number[i] += q.number[i] + more;
@@ -196,12 +196,11 @@ public:
                     more = 0;
                 }
             }
-            q.number[j] = chast;
+            q.number[j] = quotient;
         }
-        PopZeroes();
+        popZeroes();
         q.makeTransitionThroughDozens();
-        q.PopZeroes();
-        q.PopZeroes();
+        q.popZeroes();
         *this = q;
         positive = ! (positive ^ a.positive);
         return *this;
@@ -260,7 +259,7 @@ public:
     }
 
     bool operator > (const BigInteger& a) const {
-        return ! (*this <= a);
+        return ! (a < *this);
     }
 
     bool operator >= (const BigInteger& a) const {
@@ -268,7 +267,7 @@ public:
     }
 
     bool operator <= (const BigInteger& a) const {
-        return (a == *this || *this < a);
+        return ! (a < *this);
     }
 
 
@@ -300,7 +299,7 @@ public:
 
 
 
-    std::string toString () const {
+    std::string toString() const {
         int le = (int) (!positive && *this != 0);
         std::string str(_size+le, '0');
         if (le)
@@ -310,36 +309,36 @@ public:
         return str;
     }
 
-    int getNumber (const int& i) const {
+    int getNumber(const int& i) const {
         return number[i];
     }
-    size_t size () const {
+    size_t size() const {
         return _size;
     }
-    bool isPositive () const {
+    bool isPositive() const {
         return positive;
     }
 
 
 
-    explicit operator bool () const {
+    explicit operator bool() const {
         return !( *this == 0);
     }
 
 private:
-    void PopZeroes () {
+    void popZeroes() {
         while (number.size() > 1 && number.back() == 0) {
             number.pop_back();
         }
         _size = number.size();
     }
 
-    void PushOne () {
+    void pushOne() {
         number.push_back(0);
         ++_size;
     }
 
-    void ChangeSign () const {
+    void changeSign() const {
         positive = ! positive;
     }
 
@@ -349,7 +348,6 @@ private:
 short BigInteger::base = 10;
 
 std::ostream& operator << (std::ostream &stream, const BigInteger &a) {
-    std::string str;
     if (a < 0)
         stream << '-';
     for (size_t i = a.size() - 1; i < a.size(); --i) {
